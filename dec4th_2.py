@@ -1,8 +1,6 @@
-from datetime import datetime
 import operator
 import sys
 
-date_format = '%Y-%m-%d %H:%M'
 
 def sol():
 
@@ -33,11 +31,11 @@ def sol():
 
         if event[1][0] == 'f':
 
-            fell_asleep = datetime.strptime(event[0], date_format).minute
+            fell_asleep = int(event[0][(len(event[0]) - 2):])
 
         if event[1][0] == 'w':
 
-            woke_up = datetime.strptime(event[0], date_format).minute
+            woke_up = int(event[0][(len(event[0]) - 2):])
 
             if guard_id not in minute_stats:
 
@@ -73,9 +71,8 @@ def sol():
             max_frequency = local_max_frequency
             max_minute = i
             max_id = local_max_id
-    
-    print(max_id, max_minute)
-
+  
     return max_id * max_minute
+
 
 print(sol())
