@@ -11,7 +11,7 @@ def sol():
 
         left = 0
         right = 1
-        # This adds unnecessary constant.
+        # This adds unnecessary complexity. Mby will fix later.
         polymer = poly.replace(chr(letter), '')
         polymer = polymer.replace(chr(letter + 32), '')
         length = len(polymer) - 1
