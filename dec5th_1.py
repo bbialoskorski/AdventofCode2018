@@ -1,52 +1,62 @@
+import operator
 import sys
 
 
 def sol():
 
-    polymer = sys.stdin.read()
+    records = sys.stdin.readlines()
 
-    left = 0
-    right = 1
-    length = len(polymer) - 1
+    events = list()
 
-    jumps = dict()
+    for record in records:
 
-    while left < right and right < len(polymer) - 1:
- 
-        if abs(ord(polymer[left]) - ord(polymer[right])) == 32:
+        timestamp = record.split(']')[0].replace('[', '')
+        event = record.split(']')[1]
+        event = event[1:len(event) - 1]
 
-            length -= 2
+        events.append((timestamp, event))
 
-            new_left = left - 1
+    events.sort(key=lambda event: event[0])
 
-            while new_left > 0 and new_left in jumps:
+    minute_stats = dict()
+    minutes_slept = dict()
 
-                new_left -= jumps[new_left]
+    fell_asleep = 0
+    guard_id = 0
 
-            if new_left in jumps or new_left < 0:
+    for event in events: 
 
-                new_left = right
+        if event[1][0] == 'G':
 
-            new_right = right + 1
+            guard_id = int(event[1].split(' ')[1][1:])
 
-            if new_left < left:
+        if event[1][0] == 'f':
 
-                jumps[right] = right - new_left
+            fell_asleep = int(event[0][(len(event[0])) - 2:])
 
-            else:
+        if event[1][0] == 'w':
 
-                jumps[right] = right
+            woke_up = int(event[0][(len(event[0]) - 2):])
 
-            right = new_right
-            left = new_left
+            if guard_id not in minutes_slept:
 
-        else:
-        
-            left = right
+                minutes_slept[guard_id] = 0
+                minute_stats[guard_id] = list()
 
-            right += 1
+                for i in range(60):
 
-    return length
+                    minute_stats[guard_id].append(0)
+                
+            minutes_slept[guard_id] += woke_up - fell_asleep
 
+            for minute in range(fell_asleep, woke_up, 1):
+                
+               minute_stats[guard_id][minute] += 1 
+
+    laziest = max(minutes_slept.items(), key=operator.itemgetter(1))[0]
+
+    minute = minute_stats[laziest].index(max(minute_stats[laziest]))
+
+    return laziest * minute
 
 print(sol())

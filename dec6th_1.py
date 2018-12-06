@@ -1,137 +1,52 @@
 import sys
 
-infinite = False
-
-sys.setrecursionlimit(20000)
-
-def manhattan(x, y):
-
-    return abs(x[0] - y[0]) + abs(x[1] - y[1])
-
-def bfs(row, col, num_rows, num_cols, grid, tag, visited):
-
-    global infinite
-
-    if row >= 0 and row < num_rows and col >= 0 and col < num_cols and not visited[row][col]:
-
-        if grid[row][col] != tag:
-
-            return 0
-
-        visited[row][col] = True
-
-        if row == 0 or row == num_rows - 1 or col == 0 or col == num_cols - 1:
-
-            infinite = True
-
-        area = 0
-        # Up
-        area += bfs(row - 1, col, num_rows, num_cols, grid, tag, visited) 
-        # Right
-        area += bfs(row, col + 1, num_rows, num_cols, grid, tag, visited)
-        # Down
-        area += bfs(row + 1, col, num_rows, num_cols, grid, tag, visited)
-        # Left
-        area += bfs(row, col - 1, num_rows, num_cols, grid, tag, visited)
-
-        return area + 1
-
-    return 0
 
 def sol():
 
-    points  = list()
+    polymer = sys.stdin.read()
 
-    coordinates = sys.stdin.readlines()
+    left = 0
+    right = 1
+    length = len(polymer) - 1
 
-    for line in coordinates:
+    jumps = dict()
 
-        split_line = line.split(',')
-        x = int(split_line[0])
-        y = int(split_line[1])
+    while left < right and right < len(polymer) - 1:
+ 
+        if abs(ord(polymer[left]) - ord(polymer[right])) == 32:
 
-        points.append((x,y))
+            length -= 2
 
-    min_x = points[0][0]
-    max_x = points[0][0]
-    min_y = points[0][1]
-    max_y = points[0][1]
+            new_left = left - 1
 
-    for point in points:
+            while new_left > 0 and new_left in jumps:
 
-        if point[0] < min_x:
+                new_left -= jumps[new_left]
 
-            min_x = point[0]
+            if new_left in jumps or new_left < 0:
 
-        if point[0] > max_x:
+                new_left = right
 
-            max_x = point[0]
+            new_right = right + 1
 
-        if point[1] < min_y:
+            if new_left < left:
 
-            min_y = point[1]
+                jumps[right] = right - new_left
 
-        if point[1] > max_y:
+            else:
 
-            max_y = point[1]
+                jumps[right] = right
 
-    width = max_x - min_x + 1
-    height = max_y - min_y + 1
+            right = new_right
+            left = new_left
 
-    grid = [[0 for point in range(width)] for x in range(height)]
-    
-    for row in range(height):
+        else:
+        
+            left = right
 
-        for column in range(width):
+            right += 1
 
-            current = (min_x + column, min_y + row)
-            min_distance = manhattan(current, points[0])
+    return length
 
-            for point in range(len(points)):
 
-                distance = manhattan(current, points[point])
-
-                if distance == 0:
-
-                    grid[row][column] = point
-                    break
-
-                if distance < min_distance:
-
-                    min_distance = distance
-                    grid[row][column] = point
-
-            count = 0
-
-            for point in range(len(points)):
-
-                distance = manhattan(current, points[point])
-
-                if distance == min_distance:
-
-                    count += 1
-
-            if count > 1: 
-
-                grid[row][column] = -1
-
-    visited = [[False for point in range(width)] for x in range(height)]
-
-    points_areas = [0 for i in range(len(points))]
-
-    for row in range(height):
-
-        for col in range(width):
-
-            if grid[row][col] != -1 and visited[row][col] == False:
-
-                global infinite
-                infinite = False
-                area = bfs(row, col, height, width, grid, grid[row][col], visited)
-
-                if not infinite:
-                    points_areas[grid[row][col]] += area
-
-    print(max(points_areas))
-
-sol()
+print(sol())

@@ -1,34 +1,19 @@
-import sys
-
 def sol():
 
-    countof2s = 0
-    countof3s = 0
+    frequency = 0; 
 
-    for line in sys.stdin:
+    with open ("inputs/dec2nd.in") as input:
 
-        letter_counts = [0] * 26
+        for line in input:
 
-        for letter in line[:len(line) - 1]:
+            if line[0] == "-":
 
-            letter_counts[ord(letter) - ord('a')] += 1
+                frequency -= int(line[1:])
 
-        had2 = False
-        had3 = False
+            else:
 
-        for count in letter_counts:
+                frequency += int(line[1:])
 
-            if not had2 and count == 2:
+    print(frequency)
 
-                countof2s += 1
-                had2 = True
-
-            if not had3 and count == 3:
-                
-                countof3s += 1
-                had3 = True
-
-    return countof2s * countof3s
-
-print(sol())
-
+sol()

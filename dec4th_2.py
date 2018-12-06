@@ -1,78 +1,98 @@
-import operator
 import sys
 
 
 def sol():
 
-    records = sys.stdin.readlines()
+    hevents = list()
+    vevents = list()
 
-    events = list()
+    valid_claims = set()
 
-    for record in records:
+    claims = sys.stdin.readlines()
 
-        timestamp = record.split(']')[0].replace('[', '')
-        event = record.split(']')[1]
-        event = event[1:len(event) - 1]
+    for claim in claims:
+        
+        formatted_claim = [x for x in claim.split(' ')]
 
-        events.append((timestamp, event))
+        coords = formatted_claim[2].split(',')
+        size = formatted_claim[3].split('x')
 
-    events.sort(key=lambda event: event[0])
+        claim_id = int(formatted_claim[0].replace('#', ''))
 
-    minute_stats = dict()
+        valid_claims.add(claim_id)
 
-    fell_asleep = 0
-    guard_id = 0
+        x = int(coords[0])
+        y = int(coords[1].replace(':', ''))
+        width = int(size[0])
+        height = int(size[1].replace('\n', ''))
 
-    for event in events: 
+        hevents.append((x, claim_id, -1))
+        hevents.append((x + width, claim_id, 1))
+        vevents.append((y, claim_id, -1))
+        vevents.append((y + height, claim_id, 1))
 
-        if event[1][0] == 'G':
+    hevents.sort(key=lambda event : event[0])
+    vevents.sort(key=lambda event : event[0])
 
-            guard_id = int(event[1].split(' ')[1][1:])
+    vactive = set()
+    hactive = set()
+    active = set()
 
-        if event[1][0] == 'f':
+    overlaps = 0
 
-            fell_asleep = int(event[0][(len(event[0]) - 2):])
+    h = 0
 
-        if event[1][0] == 'w':
+    for x in range(1000): 
+        
+        while h < len(hevents) and hevents[h][0] == x:
 
-            woke_up = int(event[0][(len(event[0]) - 2):])
+            if hevents[h][2] == -1:
 
-            if guard_id not in minute_stats:
+                hactive.add(hevents[h][1])
 
-                minute_stats[guard_id] = list()
+            else:
+ 
+                hactive.remove(hevents[h][1])
 
-                for i in range(60):
+            h += 1
 
-                    minute_stats[guard_id].append(0)
-                
+        v = 0
 
-            for minute in range(fell_asleep, woke_up, 1):
-                
-               minute_stats[guard_id][minute] += 1 
+        for y in range(1000):
+            
+            while v < len(vevents) and vevents[v][0] == y:
 
-    max_id = 0
-    max_minute = 0
-    max_frequency = 0
+                if vevents[v][2] == -1:
 
-    for i in range(60):
+                    vactive.add(vevents[v][1])
 
-        local_max_id = 0
-        local_max_frequency = 0
+                    if vevents[v][1] in hactive:
 
-        for guard in minute_stats.items():
+                        active.add(vevents[v][1])
 
-            if guard[1][i] > local_max_frequency:
+                else:
 
-                local_max_frequency = guard[1][i]
-                local_max_id = guard[0]
+                    vactive.remove(vevents[v][1])
+                    
+                    if vevents[v][1] in active:
 
-        if local_max_frequency > max_frequency:
+                        active.remove(vevents[v][1])
 
-            max_frequency = local_max_frequency
-            max_minute = i
-            max_id = local_max_id
-  
-    return max_id * max_minute
+                v+=1
+
+            if len(active) > 1:
+
+                overlaps += 1
+
+                for claim in active:
+
+                    if claim in valid_claims:
+
+                        valid_claims.remove(claim)
+
+                    
+
+    return valid_claims
 
 
 print(sol())

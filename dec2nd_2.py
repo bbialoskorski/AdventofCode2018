@@ -1,29 +1,29 @@
-import sys
-
-
 def sol():
 
-    ids = sys.stdin.readlines()
+    frequencies = set()
 
-    id_len = len(ids[0]) - 1
+    frequency = 0
 
-    for i in range(len(ids)):
+    while True:
 
-        for j in range(i + 1, len(ids), 1):
+        with open("inputs/dec2nd.in") as input:
 
-            distance = 0
-            
-            index = 0 
-            
-            for k in range(id_len):
- 
-                if ids[i][k] != ids[j][k]:
+            for line in input:
+                
+                frequencies.add(frequency)
 
-                    index = k
-                    distance += 1
+                if line[0] == "-":
 
-            if distance == 1:
+                    frequency -= int(line[1:])
 
-                return ids[i][:index] + ids[i][index + 1:id_len]
+                else:
+
+                    frequency += int(line[1:])
+
+                if frequency in frequencies:
+
+                    return frequency
 
 print(sol())
+
+                    

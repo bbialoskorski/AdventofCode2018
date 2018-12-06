@@ -3,96 +3,27 @@ import sys
 
 def sol():
 
-    hevents = list()
-    vevents = list()
+    ids = sys.stdin.readlines()
 
-    valid_claims = set()
+    id_len = len(ids[0]) - 1
 
-    claims = sys.stdin.readlines()
+    for i in range(len(ids)):
 
-    for claim in claims:
-        
-        formatted_claim = [x for x in claim.split(' ')]
+        for j in range(i + 1, len(ids), 1):
 
-        coords = formatted_claim[2].split(',')
-        size = formatted_claim[3].split('x')
-
-        claim_id = int(formatted_claim[0].replace('#', ''))
-
-        valid_claims.add(claim_id)
-
-        x = int(coords[0])
-        y = int(coords[1].replace(':', ''))
-        width = int(size[0])
-        height = int(size[1].replace('\n', ''))
-
-        hevents.append((x, claim_id, -1))
-        hevents.append((x + width, claim_id, 1))
-        vevents.append((y, claim_id, -1))
-        vevents.append((y + height, claim_id, 1))
-
-    hevents.sort(key=lambda event : event[0])
-    vevents.sort(key=lambda event : event[0])
-
-    vactive = set()
-    hactive = set()
-    active = set()
-
-    overlaps = 0
-
-    h = 0
-
-    for x in range(1000): 
-        
-        while h < len(hevents) and hevents[h][0] == x:
-
-            if hevents[h][2] == -1:
-
-                hactive.add(hevents[h][1])
-
-            else:
- 
-                hactive.remove(hevents[h][1])
-
-            h += 1
-
-        v = 0
-
-        for y in range(1000):
+            distance = 0
             
-            while v < len(vevents) and vevents[v][0] == y:
+            index = 0 
+            
+            for k in range(id_len):
+ 
+                if ids[i][k] != ids[j][k]:
 
-                if vevents[v][2] == -1:
+                    index = k
+                    distance += 1
 
-                    vactive.add(vevents[v][1])
+            if distance == 1:
 
-                    if vevents[v][1] in hactive:
-
-                        active.add(vevents[v][1])
-
-                else:
-
-                    vactive.remove(vevents[v][1])
-                    
-                    if vevents[v][1] in active:
-
-                        active.remove(vevents[v][1])
-
-                v+=1
-
-            if len(active) > 1:
-
-                overlaps += 1
-
-                for claim in active:
-
-                    if claim in valid_claims:
-
-                        valid_claims.remove(claim)
-
-                    
-
-    return valid_claims
-
+                return ids[i][:index] + ids[i][index + 1:id_len]
 
 print(sol())

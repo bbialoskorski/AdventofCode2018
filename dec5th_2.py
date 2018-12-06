@@ -1,62 +1,78 @@
+import operator
 import sys
 
 
 def sol():
 
-    poly = sys.stdin.read()
+    records = sys.stdin.readlines()
 
-    shortest = len(poly) - 1
+    events = list()
 
-    for letter in range(65, 91, 1):
+    for record in records:
 
-        left = 0
-        right = 1
-        # This adds unnecessary complexity. Mby will fix later.
-        polymer = poly.replace(chr(letter), '')
-        polymer = polymer.replace(chr(letter + 32), '')
-        length = len(polymer) - 1
+        timestamp = record.split(']')[0].replace('[', '')
+        event = record.split(']')[1]
+        event = event[1:len(event) - 1]
 
-        jumps = dict()
+        events.append((timestamp, event))
 
-        while left < right and right < len(polymer) - 1:
+    events.sort(key=lambda event: event[0])
 
-            if abs(ord(polymer[left]) - ord(polymer[right])) == 32:
+    minute_stats = dict()
 
-                length -= 2
+    fell_asleep = 0
+    guard_id = 0
 
-                new_left = left - 1
+    for event in events: 
 
-                while new_left > 0 and new_left in jumps:
+        if event[1][0] == 'G':
 
-                    new_left -= jumps[new_left]
+            guard_id = int(event[1].split(' ')[1][1:])
 
-                if new_left in jumps or new_left < 0:
+        if event[1][0] == 'f':
 
-                    new_left = right
+            fell_asleep = int(event[0][(len(event[0]) - 2):])
 
-                new_right = right + 1
+        if event[1][0] == 'w':
 
-                if new_left < left:
+            woke_up = int(event[0][(len(event[0]) - 2):])
 
-                    jumps[right] = right - new_left
+            if guard_id not in minute_stats:
 
-                else:
+                minute_stats[guard_id] = list()
 
-                    jumps[right] = right
+                for i in range(60):
 
-                right = new_right
-                left = new_left
+                    minute_stats[guard_id].append(0)
+                
 
-            else:
-            
-                left = right
+            for minute in range(fell_asleep, woke_up, 1):
+                
+               minute_stats[guard_id][minute] += 1 
 
-                right += 1
+    max_id = 0
+    max_minute = 0
+    max_frequency = 0
 
-        if length < shortest:
+    for i in range(60):
 
-            shortest = length
+        local_max_id = 0
+        local_max_frequency = 0
 
-    return shortest
+        for guard in minute_stats.items():
+
+            if guard[1][i] > local_max_frequency:
+
+                local_max_frequency = guard[1][i]
+                local_max_id = guard[0]
+
+        if local_max_frequency > max_frequency:
+
+            max_frequency = local_max_frequency
+            max_minute = i
+            max_id = local_max_id
+  
+    return max_id * max_minute
+
 
 print(sol())

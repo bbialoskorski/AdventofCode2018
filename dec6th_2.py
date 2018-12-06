@@ -1,69 +1,62 @@
 import sys
 
 
-def manhattan(x, y):
-
-    return abs(x[0] - y[0]) + abs(x[1] - y[1])
-
 def sol():
 
-    points  = list()
+    poly = sys.stdin.read()
 
-    coordinates = sys.stdin.readlines()
+    shortest = len(poly) - 1
 
-    for line in coordinates:
+    for letter in range(65, 91, 1):
 
-        split_line = line.split(',')
-        x = int(split_line[0])
-        y = int(split_line[1])
+        left = 0
+        right = 1
+        # This adds unnecessary complexity. Mby will fix later.
+        polymer = poly.replace(chr(letter), '')
+        polymer = polymer.replace(chr(letter + 32), '')
+        length = len(polymer) - 1
 
-        points.append((x,y))
+        jumps = dict()
 
-    min_x = points[0][0]
-    max_x = points[0][0]
-    min_y = points[0][1]
-    max_y = points[0][1]
+        while left < right and right < len(polymer) - 1:
 
-    for point in points:
+            if abs(ord(polymer[left]) - ord(polymer[right])) == 32:
 
-        if point[0] < min_x:
+                length -= 2
 
-            min_x = point[0]
+                new_left = left - 1
 
-        if point[0] > max_x:
+                while new_left > 0 and new_left in jumps:
 
-            max_x = point[0]
+                    new_left -= jumps[new_left]
 
-        if point[1] < min_y:
+                if new_left in jumps or new_left < 0:
 
-            min_y = point[1]
+                    new_left = right
 
-        if point[1] > max_y:
+                new_right = right + 1
 
-            max_y = point[1]
+                if new_left < left:
 
-    width = max_x - min_x + 1
-    height = max_y - min_y + 1
+                    jumps[right] = right - new_left
 
-    area = 0
+                else:
 
-    for row in range(height):
+                    jumps[right] = right
 
-        for column in range(width):
+                right = new_right
+                left = new_left
 
-            current = (min_x + column, min_y + row)
-            distance_sum = 0
-
-            for point in range(len(points)):
-
-                distance_sum += manhattan(current, points[point])
-
-
-            if distance_sum < 10000:
-
-                area += 1
+            else:
             
-    print(area)
+                left = right
 
+                right += 1
 
-sol()
+        if length < shortest:
+
+            shortest = length
+
+    return shortest
+
+print(sol())
