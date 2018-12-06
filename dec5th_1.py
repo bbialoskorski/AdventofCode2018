@@ -29,7 +29,7 @@ def sol():
 
             new_right = right + 1
 
-            if (new_left < left):
+            if new_left < left:
 
                 jumps[right] = right - new_left
 

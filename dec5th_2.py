@@ -19,7 +19,7 @@ def sol():
         jumps = dict()
 
         while left < right and right < len(polymer) - 1:
-     
+
             if abs(ord(polymer[left]) - ord(polymer[right])) == 32:
 
                 length -= 2
