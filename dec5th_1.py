@@ -37,8 +37,6 @@ def sol():
 
                 jumps[right] = right
 
-            jumps[left] = new_right - left
-
             right = new_right
             left = new_left
 
